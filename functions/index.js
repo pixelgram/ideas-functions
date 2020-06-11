@@ -15,3 +15,13 @@ exports.onDeleteIdea = functions.region('asia-northeast1').firestore.document('i
  })
  return batch.commit()
 })
+
+exports.onDeleteTheme = functions.region('asia-northeast1').firestore.document('themes/{themeId}').onDelete(async (snapshot) => {
+ const data = snapshot.data()
+ const batch = db.batch()
+ const result = await db.collection('ideas').where('themeId', '==', data.id).get()
+ result.forEach((doc) => {
+  batch.delete(doc.ref)
+ })
+ return batch.commit()
+})
